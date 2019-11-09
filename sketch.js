@@ -29,6 +29,7 @@ class blob{
 				 this.newY + this.relativeposY,
 				 this.parent.newX + this.parent.relativeposX,
 				 this.parent.newY + this.parent.relativeposY);
+			fill(this.color);
 			ellipse(this.newX + this.relativeposX,
 					this.newY + this.relativeposY,
 					this.diameter,this.diameter
@@ -75,15 +76,15 @@ function setup() {
 	background(255);
 	fill(255,0,0);
 	var dummy = new blob(displayWidth/2,40,0,null,null,false)
-	var grandfather = new blob(displayWidth/2, 40,100,null,dummy,false);
-	var father = new blob(displayWidth/2 - 200, 200,70,null,grandfather,true);
-	var son = new blob(displayWidth/2 - 400, 400,50,null,father,true);
-	var grandson = new blob(displayWidth/2 - 600, 600,50,null,son,true);
+	var grandfather = new blob(displayWidth/2, 40,100,color(255,0,0),dummy,true);
+	var father = new blob(displayWidth/2 - 200, 200,70,color(255,255,0),grandfather,true);
+	var son1 = new blob(displayWidth/2 - 400, 400,50,color(0,0,255),father,true);
+	var son2 = new blob(displayWidth/2 , 400,50,color(0,0,255),father,true);
 	blobs.push(dummy);
 	blobs.push(grandfather);
 	blobs.push(father);
-	blobs.push(son);
-	//blobs.push(grandson);
+	blobs.push(son1);
+	blobs.push(son2);
 }
 
 function draw() {
