@@ -2,8 +2,50 @@ let dragged = false;
 let currBlob = null;
 let globalSelected = false;
 let originOffets = [];
+let mouseDoubleClicked = {
+	x:null,
+	y:null
+};
+let dblClicked =  false;
+var data = {
+	"Process" :[{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"},
+				{name:"a"}],
+	"MLV" : [],
+	"Model_Object" : []
+}
+function loadData(){
+	
+}
 class blob{
-	constructor(oX,oY,diameter,color,parent,movable){
+	constructor(oX,oY,diameter,col,parent,movable){
 		this.oX = oX;
 		this.oY = oY;
 		this.newX = this.oX;
@@ -11,7 +53,7 @@ class blob{
 		this.relativeposX = 0;
 		this.relativeposY = 0;
 		this.parent = parent;
-		this.color = color;
+		this.col = col;
 		this.diameter = diameter
 		this.originXoffset = 0;
 		this.originYoffset = 0;
@@ -24,16 +66,37 @@ class blob{
 		this.show = function(){
 			this.newX = this.oX + this.parent.children_originXoffset;
 			this.newY = this.oY + this.parent.children_originYoffset;
-			if(this.parent.diameter != 0)
-			line(this.newX + this.relativeposX,
-				 this.newY + this.relativeposY,
-				 this.parent.newX + this.parent.relativeposX,
-				 this.parent.newY + this.parent.relativeposY);
-			fill(this.color);
-			ellipse(this.newX + this.relativeposX,
-					this.newY + this.relativeposY,
-					this.diameter,this.diameter
-					);
+			if(this.parent.diameter != 0){
+				stroke(color("#F9D342"));
+				// /strokeWeight(1);
+				// line(this.newX + this.relativeposX,
+				// 	 this.newY + this.relativeposY,
+				// 	 this.parent.newX + this.parent.relativeposX,
+				// 	 this.parent.newY + this.parent.relativeposY);
+				context.lineWidth = 5;
+				context.setLineDash([5,10]);
+				context.beginPath();
+				context.moveTo(this.newX + this.relativeposX,
+				 	 	   this.newY + this.relativeposY);
+				context.lineTo( this.parent.newX + this.parent.relativeposX,
+							this.parent.newY + this.parent.relativeposY);
+				context.stroke();
+			}
+				var d = dist(mouseX,mouseY,this.newX + this.relativeposX,this.newY + this.relativeposY)
+				if(d<=this.diameter/2)
+				{
+					context.setLineDash([5,0]);
+					stroke(color("#CCF381"));
+					strokeWeight(5);
+				}
+				else
+					noStroke();
+				fill(this.col);
+				ellipse(this.newX + this.relativeposX,
+						this.newY + this.relativeposY,
+						this.diameter,this.diameter
+						);
+
 			if(globalSelected === true)
 			{
 				this.children_originXoffset = this.relativeposX + this.parent.children_originXoffset;
@@ -65,21 +128,43 @@ class blob{
 				this.children_originYoffset = this.relativeposY + this.parent.children_originYoffset;
 			}
 		}
-		
+		this.checkDoubleClicked = function(){
+			//console.log("Inside")
+			if(dblClicked ==  true&& 
+			   dist(this.newX,this.newY,mouseDoubleClicked.x,mouseDoubleClicked.y)
+											<= this.diameter / 2)
+			{
+				console.log(this);
+				alert(this);
+				dblClicked =  false;
+				mouseDoubleClicked.mouseX = null;
+				mouseDoubleClicked.mouseY = null;
+			}
+		}
 	}
 }
 var blobs = [];
 
 function setup() {
-	//frameRate(70);
+	console.log(data);
+	frameRate(70);
 	var canvas = createCanvas(displayWidth, displayHeight);
+	var c = document.getElementsByTagName("canvas")[0];
+	context = c.getContext("2d") ;
+	c.addEventListener('dblclick', function (e) {
+  			
+			mouseDoubleClicked.x = mouseX;
+			mouseDoubleClicked.y = mouseY;
+			dblClicked =  true;
+			//console.log(dblClicked,mouseDoubleClicked.x,mouseDoubleClicked.y);
+		});
 	background(255);
-	fill(255,0,0);
-	var dummy = new blob(displayWidth/2,40,0,null,null,false)
-	var grandfather = new blob(displayWidth/2, 40,100,color(255,0,0),dummy,true);
-	var father = new blob(displayWidth/2 - 200, 200,70,color(255,255,0),grandfather,true);
-	var son1 = new blob(displayWidth/2 - 400, 400,50,color(0,0,255),father,true);
-	var son2 = new blob(displayWidth/2 , 400,50,color(0,0,255),father,true);
+	fill(color("#101820FF"));
+	var dummy = new blob(displayWidth/2,40,0,null,null,true)
+	var grandfather = new blob(displayWidth/2, 40,100,color("#EC4D37"),dummy,false);
+	var father = new blob(displayWidth/2 - 200, 200,70,color("#EC4D37"),grandfather,true);
+	var son1 = new blob(displayWidth/2 - 400, 400,50,color("#EC4D37"),father,true);
+	var son2 = new blob(displayWidth/2 , 400,50,color("#EC4D37"),father,true);
 	blobs.push(dummy);
 	blobs.push(grandfather);
 	blobs.push(father);
@@ -88,16 +173,21 @@ function setup() {
 }
 
 function draw() {
-  background(255);
+  background(color("#1D1B1B"));
   for(var x =  blobs.length - 1 ;x >= 1;x--)
   {
   	blobs[x].show();
   	blobs[x].updatePos();
+  	blobs[x].checkDoubleClicked();
   }
+  dblClicked =  false;
+  mouseDoubleClicked.mouseX = null;
+  mouseDoubleClicked.mouseY = null;
 }
 
 function mouseReleased()
 {
+	//console.log("Mouse Released");
 	//console.log(currBlob)
 	if(currBlob !== null)
 		currBlob.selected = false;
@@ -108,5 +198,6 @@ function mouseReleased()
 
 function mouseDragged()
 {
+	//console.log("Mouse Dragged");	
 	dragged = true;
 }
